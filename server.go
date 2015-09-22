@@ -83,7 +83,8 @@ func getRequest(conn net.Conn){
 
 func (moment *MomentumServer) serverRunning() {
 	for {
-		if conn, err := moment.listener.Accept(); err != nil {
+		conn, err := moment.listener.Accept(); 
+		if err != nil {
 			moment.logger.Fatal(err)
 		}
 
@@ -98,7 +99,7 @@ func (moment *MomentumServer) checkFunc(title string, f interface{}) error {
 	}
 
 	item := reflect.ValueOf(f).Kind()
-	if item != "func" {
+	if item != reflect.Func {
 		return errors.New("This type is not a function")
 	}
 
