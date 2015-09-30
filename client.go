@@ -1,6 +1,7 @@
 package momentum
 
 import (
+	"encoding/json"
 	"log"
 	"os"
 	"sync"
@@ -13,7 +14,7 @@ type MomentumClient struct {
 }
 
 func InitClient() *MomentumClient {
-	return MomentumClient{mutex: *sync.Mutex{}, log: log.New(os.Stderr, "", log.LstdFlags)}
+	return &MomentumClient{mutex: &sync.Mutex{}, log: log.New(os.Stderr, "", log.LstdFlags)}
 }
 
 type AsyncResult struct {
@@ -23,7 +24,7 @@ type AsyncResult struct {
 
 //Add provides call remote procedure
 func (client *MomentumClient) Get(title string, arguments interface{}) {
-	err := json.Marshal(arguments)
+	_, err := json.Marshal(arguments)
 	if err != nil {
 		panic(err)
 	}
@@ -32,4 +33,5 @@ func (client *MomentumClient) Get(title string, arguments interface{}) {
 func (client *MomentumClient) Call(title string) *AsyncResult {
 	client.mutex.Lock()
 	defer client.mutex.Unlock()
+	return &AsyncResult{}
 }
