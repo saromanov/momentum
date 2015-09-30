@@ -1,8 +1,9 @@
 package momentum
 
 type Stat struct {
-	numberofcalls  uint64
-	numberoferros  uint64
-	bytesread      uint64
-	byteswrite     uint64
+	Numberofcalls  uint64
+	Numberoferros  uint64
+	Bytesread      uint64
+	Byteswrite     uint64
+	
 }
