@@ -9,10 +9,13 @@ import
 	"reflect"
 	"errors"
 	"os"
-	"fmt"
 	"runtime"
 )
 
+type Server interface {
+	Start()
+	Stop()
+}
 
 type MomentumServer struct {
 	Addr string
@@ -38,6 +41,10 @@ func Create(addr string)*MomentumServer{
 func(moment *MomentumServer) Start(){
 	moment.logger.Print("Try to start server")
 	moment.serverRunning()
+}
+
+func (moment *MomentumServer) Stop() {
+	close(moment.working)
 }
 
 func (moment* MomentumServer) RegisterFunc(title string, f interface{}) error {
@@ -91,6 +98,9 @@ func (moment *MomentumServer) serverRunning() {
 			moment.logger.Fatal(err)
 		}
 
+		if !<-moment.working {
+
+		}
 		go getRequest(conn)
 	}
 }
@@ -103,7 +113,6 @@ func (moment *MomentumServer) checkFunc(title string, f interface{}) error {
 
 	//Checking that f is a function
 	item := reflect.ValueOf(f).Kind()
-	fmt.Println(item)
 	if item != reflect.Func {
 		return errors.New("This type is not a function")
 	}
