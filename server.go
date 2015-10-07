@@ -19,35 +19,37 @@ type Server interface {
 
 type MomentumServer struct {
 	Addr string
-	listener net.Listener
-	stat     Stat
-	lock     *sync.Mutex
-	funcs    map[string]interface{}
-	working  chan bool
-	logger   *log.Logger
+	Listener net.Listener
+	Stat     Stat
+	Lock     *sync.Mutex
+	Funcs    map[string]interface{}
+	Working  chan bool
+	Logger   *log.Logger
 
 }
 
 func Create(addr string)*MomentumServer{
 	moment := new(MomentumServer)
 	moment.Addr = addr
-	moment.listener = initTCPServer(addr)
-	moment.stat = Stat{}
-	moment.funcs = map[string]interface{}{}
-	moment.logger = log.New(os.Stderr, "", log.LstdFlags)
+	moment.Listener = initTCPServer(addr)
+	moment.Stat = Stat{}
+	moment.Funcs = map[string]interface{}{}
+	moment.Logger = log.New(os.Stderr, "", log.LstdFlags)
 	return moment
 }
 
 func(moment *MomentumServer) Start(){
-	moment.logger.Print("Try to start server")
+	moment.Logger.Print("Try to start server")
 	moment.serverRunning()
 }
 
 func (moment *MomentumServer) Stop() {
-	close(moment.working)
+	close(moment.Working)
 }
 
 func (moment* MomentumServer) RegisterFunc(title string, f interface{}) error {
+	moment.Lock.Lock()
+	defer moment.Lock.Unlock()
 	err := moment.checkFunc(title, f)
 	if err != nil {
 		return err
@@ -58,7 +60,7 @@ func (moment* MomentumServer) RegisterFunc(title string, f interface{}) error {
 //IsRunning returns true if server is running and false in otherwise
 func (moment* MomentumServer) IsRunning() bool {
 	select {
-	case <- moment.working:
+	case <- moment.Working:
 		return true
 	default:
 		return false
@@ -93,12 +95,12 @@ func getRequest(conn net.Conn){
 
 func (moment *MomentumServer) serverRunning() {
 	for {
-		conn, err := moment.listener.Accept(); 
+		conn, err := moment.Listener.Accept(); 
 		if err != nil {
-			moment.logger.Fatal(err)
+			moment.Logger.Fatal(err)
 		}
 
-		if !<-moment.working {
+		if !<-moment.Working {
 
 		}
 		go getRequest(conn)
@@ -124,4 +126,9 @@ func (moment *MomentumServer) checkFunc(title string, f interface{}) error {
 	}
 
 	return nil	
+}
+
+func (moment *MomentumServer) callMethod(title string){
+
+	//TODO: At the end, send response to the server
 }
