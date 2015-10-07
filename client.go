@@ -6,6 +6,7 @@ import (
 	"os"
 	"sync"
 	"time"
+	"net/http"
 )
 
 type MomentumClient struct {
@@ -18,7 +19,7 @@ func InitClient() *MomentumClient {
 }
 
 type AsyncResult struct {
-	result interface{}
+	result chan interface{}
 	date   *time.Time
 }
 
@@ -30,8 +31,14 @@ func (client *MomentumClient) Get(title string, arguments interface{}) {
 	}
 }
 
-func (client *MomentumClient) Call(title string) *AsyncResult {
+//Call provides sending request to the server
+func (client *MomentumClient) Call(title string, args interface{}) *AsyncResult {
+	return client.sendArgs(title, args)
+}
+
+func (client *MomentumClient) sendArgs(title string) *AsyncResult {
 	client.mutex.Lock()
 	defer client.mutex.Unlock()
+
 	return &AsyncResult{}
 }
