@@ -56,6 +56,8 @@ func (moment* MomentumServer) RegisterFunc(title string, f interface{}) error {
 	if err != nil {
 		return err
 	}
+
+	moment.Funcs[title] = f
 	return nil
 }
 
