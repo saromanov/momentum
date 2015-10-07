@@ -10,6 +10,8 @@ import
 	"errors"
 	"os"
 	"runtime"
+	"encoding/json"
+	"io/ioutil"
 )
 
 type Server interface {
@@ -69,6 +71,20 @@ func (moment* MomentumServer) IsRunning() bool {
 
 //SendMessage provides sending message to the server
 func (moment *MomentumServer) SendMessage(msg string) {
+
+}
+
+//Serialize provides serialization of moment structure
+func (moment *MomentumServer) Serialize(outfile string) {
+	result, err := json.Marshal(moment)
+	if err != nil {
+		moment.Logger.Print("Serialize: Error to marshal moment data")
+	}
+
+	errwrite := ioutil.WriteFile(outfile, result, 0777)
+	if errwrite != nil {
+		moment.Logger.Print("Serialize: Error to write data")
+	}
 
 }
 
